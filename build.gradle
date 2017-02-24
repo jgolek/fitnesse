@@ -23,6 +23,7 @@ plugins {
   id 'java'
   id "maven-publish"
   id "com.jfrog.bintray" version "1.6"
+  id 'eclipse'
 }
 
 apply plugin: "info.solidsoft.pitest"

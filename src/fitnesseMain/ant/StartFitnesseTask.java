@@ -5,7 +5,7 @@ package fitnesseMain.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-import fitnesseMain.FitNesseMain;
+import fitnesseMain.FitNesseMain2;
 
 /**
  * Task to start fitnesse.
@@ -25,7 +25,7 @@ public class StartFitnesseTask extends Task {
   @Override
   public void execute() throws BuildException {
     try {
-      FitNesseMain.main(new String[]
+      FitNesseMain2.main(new String[]
         {"-p", String.valueOf(fitnessePort), "-d", wikiDirectoryRootPath, "-e", "0", "-o"});
       log("Sucessfully Started Fitnesse on port " + fitnessePort);
     }
