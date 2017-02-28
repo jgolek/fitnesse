@@ -31,7 +31,7 @@ public class FitNesseContext {
   public static final String testResultsDirectoryName = "testResults";
 
   public final FitNesseVersion version;
-  public final FitNesse fitNesse;
+  //public final FitNesse fitNesse;
 
   public final TestSystemFactory testSystemFactory;
   public final TestSystemListener testSystemListener;
@@ -77,7 +77,6 @@ public class FitNesseContext {
     this.properties = properties;
     responderFactory = new ResponderFactory(getRootPagePath());
     variableSource = new SystemVariableSource(properties);
-    fitNesse = new FitNesse(this);
     pageFactory = new PageFactory(this);
   }
 

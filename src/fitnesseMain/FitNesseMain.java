@@ -73,7 +73,20 @@ public class FitNesseMain {
         exitCode = null;
       } else {
         try {
-          exitCode = launch(context);
+          
+          String command = context.getProperty(COMMAND.getKey());
+          if (command != null) {
+            String output = context.getProperty(OUTPUT.getKey());
+            executeSingleCommand(context.fitNesse, command, output);
+
+            exitCode = exitCodeListener.getFailCount();
+          } else {
+            LOG.info("Starting FitNesse on port: " + context.port);
+
+            ServerSocket serverSocket = createServerSocket(context);
+            context.fitNesse.start(serverSocket);
+          }
+          
         } catch (BindException e) {
           LOG.severe("FitNesse cannot be started...");
           LOG.severe("Port " + context.port + " is already in use.");
@@ -133,23 +146,6 @@ public class FitNesseMain {
     new PluginsClassLoader(rootPath).addPluginsToClassLoader();
   }
 
-  private static Integer launch(FitNesseContext context) throws Exception {
-    if (!"true".equalsIgnoreCase(context.getProperty(INSTALL_ONLY.getKey()))) {
-      String command = context.getProperty(COMMAND.getKey());
-      if (command != null) {
-        String output = context.getProperty(OUTPUT.getKey());
-        executeSingleCommand(context.fitNesse, command, output);
-
-        return exitCodeListener.getFailCount();
-      } else {
-        LOG.info("Starting FitNesse on port: " + context.port);
-
-        ServerSocket serverSocket = createServerSocket(context);
-        context.fitNesse.start(serverSocket);
-      }
-    }
-    return null;
-  }
 
   private static ServerSocket createServerSocket(FitNesseContext context) throws IOException {
     String protocol = context.getProperty(FitNesseContext.WIKI_PROTOCOL_PROPERTY);

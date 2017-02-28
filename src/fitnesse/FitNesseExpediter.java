@@ -135,11 +135,11 @@ public class FitNesseExpediter implements ResponseSender, Runnable {
   }
 
   public Response createGoodResponse(Request request) throws Exception {
-    if (StringUtils.isBlank(request.getResource()) && StringUtils.isBlank(request.getQueryString()))
-      request.setResource("FrontPage");
-    Responder responder = context.responderFactory.makeResponder(request);
-    responder = context.authenticator.authenticate(context, request, responder);
-    return responder.makeResponse(context, request);
+        if (StringUtils.isBlank(request.getResource()) && StringUtils.isBlank(request.getQueryString()))
+          request.setResource("FrontPage");
+        Responder responder = context.responderFactory.makeResponder(request);
+        responder = context.authenticator.authenticate(context, request, responder);
+        return responder.makeResponse(context, request);
   }
 
   private Response reportError(Request request, int status, String message) throws Exception {

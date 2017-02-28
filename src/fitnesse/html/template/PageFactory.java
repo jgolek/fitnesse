@@ -17,7 +17,7 @@ public class PageFactory {
   public static final String DEFAULT_THEME = "bootstrap";
 
   private final String theme;
-  private final String contextRoot;
+  private String contextRoot;
   private VelocityEngine velocityEngine = null;
 
   public PageFactory(FitNesseContext context) {
@@ -25,7 +25,7 @@ public class PageFactory {
     String theme = context.getProperty(THEME_PROPERTY);
     this.theme = theme != null ? theme : DEFAULT_THEME;
     this.velocityEngine = newVelocityEngine(context, this.theme);
-    this.contextRoot = context.contextRoot;
+    //this.contextRoot = context.contextRoot;
   }
 
   public HtmlPage newPage() {

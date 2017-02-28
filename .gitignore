@@ -25,3 +25,4 @@ junit*.properties
 FitNesseRoot/updateDoNotCopyOverList
 FitNesseRoot/updateList
 fitMutation/
+/bin/

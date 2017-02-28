@@ -1,0 +1,45 @@
+1) Extrahiere die unterschiedlichen use cases ( alias functionen ).
+2) Ziel des Refactorings?
+   * Der Server startet.
+     * Bei einer Anfrage: 
+       * Request wird verarbeitet
+         Was wird vom Request erwartet? Request -> Adapter -> FitNessePageWorkflow
+       * Die Dateien werden vom Dateisystem eingelesen /
+       * Html wird generiert 
+       
+     * E.G Fitnesse:
+       * Refactore: WikiPageResonder. As Example
+
+Should I write or find out first tests?
+What are the functions and how the interface looks like?
+
+--
+Refactoring TODOs ( three workflows ):
+E.g FitnesseMain / has more than one use case -> for every use case there should be one command. 
+* Start Server
+   * start a new server instance
+   * instance is already running under port xyz( 
+
+* InstallOnly
+
+* Run a Command
+  * commandArgCallsExecuteSingleCommand
+  * 
+
+
+
+Glossar:
+What is the function of a context? 
+
+Is context a anti-pattern? Is used for everything.  
+
+
+
+
+
+
+
+  
+
+ 
+
