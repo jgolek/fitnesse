@@ -12,7 +12,9 @@ public class PageWorkflowTest {
         
         PageWorkflow pw = new PageWorkflow();
         
-        pw.run();
+        String run = pw.run();
+        
+        System.out.println(run);
         
     }
 

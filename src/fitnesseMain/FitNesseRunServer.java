@@ -68,14 +68,14 @@ public class FitNesseRunServer {
 
         logStartupInfo(context);
 
-        if (update(context)) {
-          LOG.info("**********************************************************");
-          LOG.info("Files have been updated to a new version.");
-          LOG.info("Please read the release notes on ");
-          LOG.info("http://localhost:" + context.port + "/FitNesse.ReleaseNotes");
-          LOG.info("to find out about the new features and fixes.");
-          LOG.info("**********************************************************");
-        }
+//        if (update(context)) {
+//          LOG.info("**********************************************************");
+//          LOG.info("Files have been updated to a new version.");
+//          LOG.info("Please read the release notes on ");
+//          LOG.info("http://localhost:" + context.port + "/FitNesse.ReleaseNotes");
+//          LOG.info("to find out about the new features and fixes.");
+//          LOG.info("**********************************************************");
+//        }
 
           try {            
             
@@ -171,7 +171,7 @@ public class FitNesseRunServer {
       final boolean sslClientAuth = (clientAuth != null && clientAuth.equalsIgnoreCase("required"));
       final String sslParameterClassName = context.getProperty(FitNesseContext.SSL_PARAMETER_CLASS_PROPERTY);
 
-      return (useHTTPS ? new SslServerSocketFactory(sslClientAuth, sslParameterClassName) : new PlainServerSocketFactory()).createServerSocket(context.port);
+      return (useHTTPS ? new SslServerSocketFactory(sslClientAuth, sslParameterClassName) : new PlainServerSocketFactory()).createServerSocket(8081);
     }
 
     private static void logStartupInfo(FitNesseContext context) {

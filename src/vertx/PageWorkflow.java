@@ -2,33 +2,29 @@ package vertx;
 
 import java.io.File;
 
-import fitnesse.wiki.PageCrawler;
-import fitnesse.wiki.PageCrawlerImpl;
-import fitnesse.wiki.PathParser;
+import fitnesse.html.template.PageFactory;
+import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
-import fitnesse.wiki.WikiPagePath;
+import fitnesse.wiki.fs.DiskFileSystem;
 import fitnesse.wiki.fs.FileSystemPageFactory;
+import fitnesse.wiki.fs.ZipFileVersionsController;
 
 public class PageWorkflow {
 
-    public Page run() {
+    public String run() {
         
-        FileSystemPageFactory pageFactory = new FileSystemPageFactory();
-        WikiPage rootPage = pageFactory.makePage(new File("./"), "rootPage", null, null);
+        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
+       
+        SystemVariableSource variableSource = new SystemVariableSource();
+        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
+        WikiPage page = wikiPageFactory.makePage(new File("./FitNesseRoot", "FrontPage"), "FrontPage", rootPage, variableSource);
         
+        PageFactory pageFactory = new PageFactory(new File("."), "./");
+        
+        WikiPageResponder pageResponder = new WikiPageResponder();
+        String html = pageResponder.makeHtml(pageFactory, page);
 
-        String pageName = "FrontPage";
-        // page workflow
-        WikiPagePath path = PathParser.parse(pageName);
-        PageCrawler crawler = new PageCrawlerImpl(rootPage);
-        crawler.getPage(path);
-        WikiPage page = crawler.getPage(path);
-        
-        
-        
-        
-        
-        return null;
+        return html;
     }
 
 }

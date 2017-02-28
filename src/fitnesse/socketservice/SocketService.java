@@ -35,6 +35,12 @@ public class SocketService {
     );
     serviceThread.setDaemon(daemon);
     serviceThread.start();
+    try {
+      serviceThread.join();
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   public void close() throws IOException {

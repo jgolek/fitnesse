@@ -3,11 +3,14 @@
 package fitnesse.html.template;
 
 import fitnesse.FitNesseContext;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+
 import util.FileUtil;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Properties;
@@ -22,10 +25,18 @@ public class PageFactory {
 
   public PageFactory(FitNesseContext context) {
     super();
-    String theme = context.getProperty(THEME_PROPERTY);
+    String theme = null;//context.getProperty(THEME_PROPERTY);
     this.theme = theme != null ? theme : DEFAULT_THEME;
-    this.velocityEngine = newVelocityEngine(context, this.theme);
-    //this.contextRoot = context.contextRoot;
+    this.velocityEngine = newVelocityEngine(new File(context.getRootPagePath()), this.theme);
+    this.contextRoot = context.contextRoot;
+  }
+  
+  public PageFactory(File rootDirecotry, String contextRoot) {
+    super();
+    String theme = null;//context.getProperty(THEME_PROPERTY);
+    this.theme = theme != null ? theme : DEFAULT_THEME;
+    this.velocityEngine = newVelocityEngine(rootDirecotry, this.theme);
+    this.contextRoot = contextRoot;
   }
 
   public HtmlPage newPage() {
@@ -52,7 +63,7 @@ public class PageFactory {
     return getClass().getName();
   }
 
-  private VelocityEngine newVelocityEngine(FitNesseContext context, String theme) {
+  private VelocityEngine newVelocityEngine(File rootDirectory, String theme) {
     Properties properties = new Properties();
 
     properties.setProperty(VelocityEngine.INPUT_ENCODING, FileUtil.CHARENCODING);
@@ -61,7 +72,7 @@ public class PageFactory {
     properties.setProperty(VelocityEngine.RESOURCE_LOADER, "file,themepath,classpath");
 
     properties.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH,
-        String.format("%s/files/fitnesse/templates", context.getRootPagePath()));
+        String.format("%s/files/fitnesse/templates", rootDirectory.getAbsolutePath()));
 
     properties.setProperty("themepath." + VelocityEngine.RESOURCE_LOADER + ".class",
         ClasspathResourceLoader.class.getName());
