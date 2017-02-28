@@ -18,13 +18,16 @@ public class VertxExample {
     Router router = Router.router(vertx);
     router.route("/files/*").handler(StaticHandler.create("./FitNesseRoot/files/"));
 
-    router.route("/").handler(context -> {
+    router.route("/*").handler(context -> {
 
       // This handler gets called for each request that arrives on the server
         HttpServerResponse response = context.response();
         response.putHeader("content-type", "text/html");
 
-        String html = new PageWorkflow().run();
+        String qualifiedPageName = context.request().path().substring(1);
+        System.out.println(qualifiedPageName);
+        
+        String html = new PageWorkflow().run(qualifiedPageName);
 
         // Write to the response and end it
         response.end(html);
