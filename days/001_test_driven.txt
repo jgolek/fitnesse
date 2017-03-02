@@ -1,0 +1,44 @@
+
+Den Quellcode den ich jetzt schreibe enthällt keine Tests? 
+Ist das gut? Ist das schlecht?
+Systemtests wären ein Test von HTML/Eingabe und Ausgabe. 
+Dies mache ich, jedoch nicht automatisiert. 
+
+Sollte das hier automatisiert werden?
+Nein, der Aufwand lohnt sich derzeit nicht.
+Der wäre jede Aktion aufzeichnen, die Daten sichern und die Aktion auf dem neuen System wiederholen und die Daten vergleichen.
+Das müsste erst implementiert werden, vielleicht wird es einfacher wenn die refactored Fitnesse-Version zur Verfügung steht.   
+
+Dieser Prozess passiere bereits, jedoch per Hand. 
+
+Tasks für heute:
+Edit Responder 
+10:40 
+-> Test EditResonder
+
+! Die Ausnahmefälle möglichst am "Ende" bearbeiten
+z.B Edit kann keine nicht vorhanden Seiten bearbeiten. Soll das jetzt gehoben werden? 
+Nein. Das Problem kann wo anders sein. Erst später lösen. Man könnte aber über eine Validierung nachdenken. z.B muss die Page gesetzt sein.
+
+// What happen if page doesn't exist?
+get page?
+edit page?
+
+
+Roadmap -> ein testfall :
++ add page
++ edit page
++ run test
++ view logs
+
+
+Roadmap
+
+-- 
+Roadmap -> wiki basis funktionen :
+* add/edit/delete/rename/login/search/...
+
+
+Tasks für heute:
+-> add page 12:40
+
