@@ -4,14 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.StaticHandler;
 
 public class VertxExample {
@@ -30,15 +29,34 @@ public class VertxExample {
         context.reroute("/FrontPage");
     });
     
-    router.route("/:pageName").handler(context -> {
+    router.route(HttpMethod.POST, "/:pageName").handler(context -> {
         
-        // This handler gets called for each request that arrives on the server
+        System.out.println(context.request().method());
+        System.out.println(context.request().absoluteURI());
+        
+
+
+        HttpServerResponse response = context.response();
+        response.putHeader("content-type", "text/html");
+        response.end("demo");
+      });
+
+    
+    router.route(HttpMethod.GET, "/:pageName").handler(context -> {
+        
+        System.out.println(context.request().method());
+        System.out.println(context.request().absoluteURI());
+        
         String qualifiedPageName = context.request().getParam("pageName");
         
         Map<String, String> queryParameters = toQueryMap(context.request().query());
 
         PageWorkflow pageWorkflow = new PageWorkflow();
         String html = null;
+        if(queryParameters.containsKey("new")){
+            NewPageResponder2 pageResponder = new NewPageResponder2();
+            html = pageWorkflow.run(qualifiedPageName, pageResponder, queryParameters);            
+        }else
         if(queryParameters.containsKey("edit")){
             EditResponder2 pageResponder = new EditResponder2();
             html = pageWorkflow.run(qualifiedPageName, pageResponder);            

@@ -1,6 +1,7 @@
 package vertx;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -59,6 +60,20 @@ public class PageWorkflow {
         PageFactory pageFactory = new PageFactory(new File("."), "./");
      
         String html = pageResponder.makeHtml(page, pageFactory);
+        return html;
+    }
+    
+    public String run(String qualifiedPageName, NewPageResponder2 pageResponder, Map<String, String> params) {
+        
+        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
+       
+        SystemVariableSource variableSource = new SystemVariableSource();
+        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
+        
+        
+        PageFactory pageFactory = new PageFactory(new File("."), "./");
+     
+        String html = pageResponder.makeHtml(pageFactory, qualifiedPageName, rootPage.getPageCrawler(), params);
         return html;
     }
 
