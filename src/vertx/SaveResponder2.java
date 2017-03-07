@@ -25,15 +25,11 @@ import fitnesse.wiki.WikiPageUtil;
 
 public class SaveResponder2 {
 
-
-
     public void updatePage(WikiPage page, Map<String, String> params) {
 
-        long editTimeStamp = getEditTime(params);
+        //long editTimeStamp = getEditTime(params);
         long ticketId = getTicketId(params);
-        
         saveEdits(params, page, ticketId);
-
     }
 
     private void saveEdits(Map<String, String> params, WikiPage page, long ticketId) {

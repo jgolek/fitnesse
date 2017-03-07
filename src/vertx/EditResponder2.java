@@ -11,6 +11,7 @@ import fitnesse.responders.editing.TemplateUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
+import fitnesse.wiki.WikiPagePath;
 
 public class EditResponder2 {
   public static final String CONTENT_INPUT_NAME = "pageContent";
@@ -31,8 +32,9 @@ public class EditResponder2 {
     HtmlPage html = pageFactory.newPage();
     html.setTitle(title + page.getName());
 
-    String qualifiedPageName = page.getName();
-    html.setPageTitle(new PageTitle(title + " Page:", PathParser.parse(qualifiedPageName), pageData.getAttribute(PageData.PropertySUITES)));
+    WikiPagePath pagePath = page.getPageCrawler().getFullPath();
+    String qualifiedPageName = pagePath.toString();
+    html.setPageTitle(new PageTitle(title + " Page:", pagePath, pageData.getAttribute(PageData.PropertySUITES)));
     html.setMainTemplate("editPage");
 
     html.put("resource", qualifiedPageName);

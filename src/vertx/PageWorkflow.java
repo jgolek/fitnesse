@@ -3,8 +3,6 @@ package vertx;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import fitnesse.html.template.PageFactory;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SystemVariableSource;
@@ -18,11 +16,7 @@ public class PageWorkflow {
     
     public WikiPage createPage(String qualifiedPageName, AddChildPageResponder2 pageResponder, Map<String, String> params) throws Exception {
         
-        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-       
-        SystemVariableSource variableSource = new SystemVariableSource();
-        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
-        
+        WikiPage rootPage = loadRootPageFromFileSystem();
         WikiPage wikiPage = pageResponder.createPage(rootPage.getPageCrawler(), qualifiedPageName, params);
 
         return wikiPage;
@@ -31,23 +25,8 @@ public class PageWorkflow {
 
     public String showPage(String qualifiedPageName, WikiPageResponder pageResponder) {
         
-        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-       
-        SystemVariableSource variableSource = new SystemVariableSource();
-        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
-        
-        String[] split = StringUtils.split(qualifiedPageName, ".");
-        WikiPage page = null;
-        WikiPage parentPage = rootPage;
-        String parentFile = "./"+parentPage.getName();
-        for (String name : split) {
-          page = wikiPageFactory.makePage(new File(parentFile, name), name, parentPage, variableSource);
-          parentPage = page;
-          parentFile = parentFile + "/" + name;
-        }
-        
+        WikiPage page = loadPageFromFileSystem(qualifiedPageName);
         PageFactory pageFactory = new PageFactory(new File("."), "./");
-        
         
         String html = pageResponder.makeHtml(pageFactory, page);
 
@@ -56,27 +35,17 @@ public class PageWorkflow {
 
     public String showEditPage(String qualifiedPageName, EditResponder2 pageResponder) {
         
-        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-       
-        SystemVariableSource variableSource = new SystemVariableSource();
-        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource);
-       
-        WikiPagePath currentPagePath = PathParser.parse(qualifiedPageName);
-        WikiPage currentPage = rootPage.getPageCrawler().getPage(currentPagePath);
+        WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
         
         PageFactory pageFactory = new PageFactory(new File("."), "./");
      
         String html = pageResponder.makeHtml(currentPage, pageFactory);
         return html;
     }
-    
+
     public String showCreatePage(String qualifiedPageName, NewPageResponder2 pageResponder, Map<String, String> params) {
         
-        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-       
-        SystemVariableSource variableSource = new SystemVariableSource();
-        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
-        
+        WikiPage rootPage = loadRootPageFromFileSystem();
         
         PageFactory pageFactory = new PageFactory(new File("."), "./");
      
@@ -87,16 +56,27 @@ public class PageWorkflow {
 
     public WikiPage updatePage(String qualifiedPageName, SaveResponder2 saveResponder2, Map<String, String> params) {
         
-        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-        
-        SystemVariableSource variableSource = new SystemVariableSource();
-        
-        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource);
-        WikiPagePath currentPagePath = PathParser.parse(qualifiedPageName);
-        WikiPage currentPage = rootPage.getPageCrawler().getPage(currentPagePath);
+        WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
         
         saveResponder2.updatePage(currentPage, params);
         return currentPage;
+    }
+    
+    private WikiPage loadPageFromFileSystem(String qualifiedPageName) {
+      WikiPage rootPage = loadRootPageFromFileSystem();
+    
+      WikiPagePath currentPagePath = PathParser.parse(qualifiedPageName);
+      WikiPage currentPage = rootPage.getPageCrawler().getPage(currentPagePath);
+      return currentPage;
+    }
+
+
+    private WikiPage loadRootPageFromFileSystem() {
+      FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
+    
+      SystemVariableSource variableSource = new SystemVariableSource();
+      WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource);
+      return rootPage;
     }
 
     
