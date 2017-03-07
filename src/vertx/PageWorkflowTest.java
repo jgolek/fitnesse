@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import vertx.responders.AddChildPageResponder2;
+import vertx.responders.EditResponder2;
+import vertx.responders.SaveResponder2;
 import fitnesse.wiki.WikiPage;
 
 public class PageWorkflowTest {

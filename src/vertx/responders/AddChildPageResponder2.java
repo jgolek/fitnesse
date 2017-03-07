@@ -1,4 +1,4 @@
-package vertx;
+package vertx.responders;
 
 import java.util.Map;
 

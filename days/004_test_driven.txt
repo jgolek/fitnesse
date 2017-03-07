@@ -1,0 +1,15 @@
+
+Run Test.
+
+Input
+----
+Request URL:http://localhost:8080/FrontPage.TestPage1?test
+Request Method:GET
+Status Code:200 OK
+
+Output
+----
+Test
+
+
+

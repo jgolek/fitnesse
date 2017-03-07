@@ -1,4 +1,4 @@
-package vertx;
+package vertx.responders;
 
 
 import static fitnesse.wiki.PageData.PAGE_TYPE_ATTRIBUTES;

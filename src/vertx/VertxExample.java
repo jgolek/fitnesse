@@ -4,6 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 
+import vertx.responders.AddChildPageResponder2;
+import vertx.responders.EditResponder2;
+import vertx.responders.NewPageResponder2;
+import vertx.responders.SaveResponder2;
+import vertx.responders.WikiPageResponder;
+
 import com.google.common.collect.Maps;
 
 import fitnesse.wiki.WikiPage;

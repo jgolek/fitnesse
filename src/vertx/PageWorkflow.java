@@ -3,6 +3,11 @@ package vertx;
 import java.io.File;
 import java.util.Map;
 
+import vertx.responders.AddChildPageResponder2;
+import vertx.responders.EditResponder2;
+import vertx.responders.NewPageResponder2;
+import vertx.responders.SaveResponder2;
+import vertx.responders.WikiPageResponder;
 import fitnesse.html.template.PageFactory;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SystemVariableSource;
