@@ -1,0 +1,26 @@
+
+Edit -> Save -> Page
+
+INPUT 
+---
+Request URL:http://localhost:8080/TestTest
+Request Method:POST
+---
+>>> responder:addChild <<<
+pageName:TestTest
+pageTemplate:.TemplateLibrary.StaticPage
+helpText:
+suites:
+__EDITOR__1:textarea
+pageContent:!contents -R2 -g -p -f -h
+
+hallo welt
+save:Save
+---
+
+
+OUTPUT
+? The new page. 
+URL: http://localhost:8080/FrontPage/TestTest
+Method: GET
+

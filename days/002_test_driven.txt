@@ -1,0 +1,42 @@
+Keine Ahnung wo ich das letzte mal stehen geblieben bin. 
+
+Jetzt starte ich mal den Server und schau was passiert. 
+Welche Http-Request werden gesendet? Wo bin ich das letzte mal stehen geblieben
+
+
+Tasks für heute:
+-> add page 
+
+INPUT 
+---
+Request URL:http://localhost:8080/FrontPage
+Request Method:POST
+---
+>>> responder:addChild <<<
+pageName:TestTest
+pageTemplate:.TemplateLibrary.StaticPage
+helpText:
+suites:
+__EDITOR__1:textarea
+pageContent:!contents -R2 -g -p -f -h
+
+hallo welt
+save:Save
+---
+OUTPUT
+? The new page. 
+URL: http://localhost:8080/FrontPage/TestTest
+Method: GET
+
+---
+Three errors.
+Parent page dosn't exist => page not found error -> should be checked somewhere else.
+
+Parent page name isn't valid => error response? / Exception?
+
+Parent page name already exists => error response? / Exception?
+
+Success:
+Create new page
+Redirect to this page
+Return to new Page.

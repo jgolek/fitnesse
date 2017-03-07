@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import fitnesse.Responder;
 import fitnesse.html.template.PageFactory;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -14,6 +13,19 @@ import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.ZipFileVersionsController;
 
 public class PageWorkflow {
+    
+    public WikiPage createPage(String qualifiedPageName, AddChildPageResponder2 pageResponder, Map<String, String> params) throws Exception {
+        
+        FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
+       
+        SystemVariableSource variableSource = new SystemVariableSource();
+        WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource );
+        
+        WikiPage wikiPage = pageResponder.createPage(rootPage.getPageCrawler(), qualifiedPageName, params);
+
+        return wikiPage;
+    }
+    
 
     public String run(String qualifiedPageName, WikiPageResponder pageResponder) {
         
