@@ -17,7 +17,7 @@ public class PageWorkflowTest {
         
         PageWorkflow pw = new PageWorkflow();
         
-        String run = pw.run("FitNesse.UserGuide", new EditResponder2());
+        String run = pw.showEditPage("FitNesse.UserGuide", new EditResponder2());
         
         System.out.println(run);
         
@@ -32,6 +32,19 @@ public class PageWorkflowTest {
         Map<String, String> params = new HashMap<>();
         params.put("pageName", "TestTest");
         WikiPage page = pw.createPage("FrontPage", new AddChildPageResponder2(), params);
+        
+        assertEquals("FrontPage.TestTest", page.getName());
+        
+    }
+    
+    @Test
+    public void testSavaData() throws Exception {
+        
+        PageWorkflow pw = new PageWorkflow();
+        
+        Map<String, String> params = new HashMap<>();
+        params.put("pageName", "TestTest");
+        WikiPage page = pw.updatePage("FrontPage.TestTest", new SaveResponder2(), params);
         
         assertEquals("FrontPage.TestTest", page.getName());
         

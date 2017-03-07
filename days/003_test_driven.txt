@@ -3,24 +3,24 @@ Edit -> Save -> Page
 
 INPUT 
 ---
-Request URL:http://localhost:8080/TestTest
+Request URL:http://localhost:8080/TestTest.HeyHey
 Request Method:POST
+Status Code:303 See Other
 ---
->>> responder:addChild <<<
-pageName:TestTest
-pageTemplate:.TemplateLibrary.StaticPage
+editTime:1488894272123
+ticketId:5616193302256460154
+responder:saveData
 helpText:
 suites:
 __EDITOR__1:textarea
 pageContent:!contents -R2 -g -p -f -h
 
-hallo welt
+hey hey 123
 save:Save
 ---
 
 
 OUTPUT
-? The new page. 
-URL: http://localhost:8080/FrontPage/TestTest
+URL: http://localhost:8080/TestTest.HeyHey
 Method: GET
 

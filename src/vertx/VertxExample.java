@@ -59,6 +59,12 @@ public class VertxExample {
                     System.out.println("exc r");
                     throw new RuntimeException(e);
                 }
+            }else
+            if ("saveData".equals(responderClass) || parameters.containsKey("saveData")) {    
+                SaveResponder2 saveResonder = new SaveResponder2();
+                 pageWorkflow.updatePage(qualifiedPageName, saveResonder, parameters);
+                
+                context.reroute(HttpMethod.GET, "/" +qualifiedPageName);
             } else {
                 System.out.println("exc");
                 throw new UnsupportedOperationException("Unsupported post request");
@@ -80,13 +86,14 @@ public class VertxExample {
             String html = null;
             if (queryParameters.containsKey("new")) {
                 NewPageResponder2 pageResponder = new NewPageResponder2();
-                html = pageWorkflow.run(qualifiedPageName, pageResponder, queryParameters);
-            } else if (queryParameters.containsKey("edit")) {
+                html = pageWorkflow.showCreatePage(qualifiedPageName, pageResponder, queryParameters);
+            } else 
+            if (queryParameters.containsKey("edit")) {
                 EditResponder2 pageResponder = new EditResponder2();
-                html = pageWorkflow.run(qualifiedPageName, pageResponder);
+                html = pageWorkflow.showEditPage(qualifiedPageName, pageResponder);
             } else {
                 WikiPageResponder pageResponder = new WikiPageResponder();
-                html = pageWorkflow.run(qualifiedPageName, pageResponder);
+                html = pageWorkflow.showPage(qualifiedPageName, pageResponder);
             }
 
 
