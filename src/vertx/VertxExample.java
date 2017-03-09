@@ -88,6 +88,7 @@ public class VertxExample {
 
             Map<String, String> queryParameters = toQueryMap(context.request().query());
 
+              
             PageWorkflow pageWorkflow = new PageWorkflow();
             String html = null;
             if (queryParameters.containsKey("new")) {
@@ -97,7 +98,16 @@ public class VertxExample {
             if (queryParameters.containsKey("edit")) {
                 EditResponder2 pageResponder = new EditResponder2();
                 html = pageWorkflow.showEditPage(qualifiedPageName, pageResponder);
-            } else {
+            } else 
+            if (queryParameters.containsKey("test")) {
+              try {
+                html = pageWorkflow.runTest(qualifiedPageName, queryParameters);
+              } catch (Exception e) {
+                e.printStackTrace();
+                html = e.getMessage();
+              }
+            } 
+            else {              
                 WikiPageResponder pageResponder = new WikiPageResponder();
                 html = pageWorkflow.showPage(qualifiedPageName, pageResponder);
             }
@@ -123,6 +133,7 @@ public class VertxExample {
             int idx = pair.indexOf("=");
             if (idx == -1) {
                 queryPairs.put(pair, "");
+                System.out.println(pair);
             } else {
                 try {
                     String key = URLDecoder.decode(pair.substring(0, idx), "UTF-8");

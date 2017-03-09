@@ -23,6 +23,7 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 
 public abstract class ChunkingResponder2 implements Responder, ChunkedDataProvider {
+  
   private static final Logger LOG = Logger.getLogger(ChunkingResponder.class.getName());
 
   protected WikiPage root;
@@ -43,7 +44,9 @@ public abstract class ChunkingResponder2 implements Responder, ChunkedDataProvid
 
     if (dontChunk || request.hasInput(Request.NOCHUNK))
       response.turnOffChunking();
+    
     getRequestedPage(request);
+    
     if (page == null && shouldRespondWith404())
       return pageNotFoundResponse(context, request);
 

@@ -1,88 +1,163 @@
 package vertx;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.Map;
 
 import vertx.responders.AddChildPageResponder2;
 import vertx.responders.EditResponder2;
 import vertx.responders.NewPageResponder2;
 import vertx.responders.SaveResponder2;
+import vertx.responders.TestResponder2;
 import vertx.responders.WikiPageResponder;
+import vertx.responders.SuiteResponder2.TestExecutor;
+import vertx.responders.SuiteResponder2.WikiPageFooterRenderer;
+import vertx.responders.SuiteResponder2.WikiPageHeaderRenderer;
+import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageFactory;
+import fitnesse.html.template.PageTitle;
+import fitnesse.reporting.SuiteHtmlFormatter;
+import fitnesse.responders.WikiImportingResponder;
+import fitnesse.responders.WikiPageActions;
+import fitnesse.testrunner.WikiPageDescriptor;
+import fitnesse.testrunner.WikiTestPage;
+import fitnesse.testsystems.Assertion;
+import fitnesse.testsystems.ExceptionResult;
+import fitnesse.testsystems.TestPage;
+import fitnesse.testsystems.TestResult;
+import fitnesse.testsystems.TestSummary;
+import fitnesse.testsystems.TestSystem;
+import fitnesse.testsystems.TestSystemListener;
+import fitnesse.testsystems.slim.CustomComparatorRegistry;
+import fitnesse.testsystems.slim.HtmlSlimTestSystem;
+import fitnesse.testsystems.slim.InProcessSlimClientBuilder;
+import fitnesse.testsystems.slim.SlimClient;
+import fitnesse.testsystems.slim.SlimClientBuilder;
+import fitnesse.testsystems.slim.SlimTestSystem;
+import fitnesse.testsystems.slim.tables.SlimTableFactory;
+import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
+import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.DiskFileSystem;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.ZipFileVersionsController;
 
 public class PageWorkflow {
+
+  public String runTest(String qualifiedPageName, Map<String, String> params) throws Exception {
+
+    WikiPage wikiPage = loadPageFromFileSystem(qualifiedPageName);
+
+    TestResponder2 testResponder = new TestResponder2();
+
+    // testResponder.runTest();
+    // MultipleTestSystemFactory. run test.
+    // wiki format to slim instructuions.
+    WikiTestPage testPage = new WikiTestPage(wikiPage);
+    WikiPageDescriptor descriptor = new WikiPageDescriptor(wikiPage, true, false, "");
+
+    // start slim service
+    SlimClient slimClient = new InProcessSlimClientBuilder(descriptor).build();
+    CustomComparatorRegistry customComparatorRegistry = new CustomComparatorRegistry();
+    // slimClient = new SlimClientBuilder(getDescriptor()).build();
+    SlimTestSystem testSystem = new HtmlSlimTestSystem("slim", slimClient, new SlimTableFactory(), customComparatorRegistry);
+    // testSystem.addTestSystemListener(this);
+
+    // run test.
+    StringWriter stringWriter = new StringWriter();
+    SuiteHtmlFormatter htmlFormatter = new SuiteHtmlFormatter(wikiPage, stringWriter);
+    testSystem.addTestSystemListener(htmlFormatter);
+    testSystem.runTests(testPage);
+    System.out.println(qualifiedPageName);
+    PageFactory pageFactory = new PageFactory(new File("."), "./");
+    HtmlPage htmlPage = pageFactory.newPage();
+    htmlPage.setTitle(testPage.getName() + ": " + testPage);
+    htmlPage.setPageTitle(new PageTitle(qualifiedPageName, qualifiedPageName));
+    htmlPage.setNavTemplate("testNav.vm");
+    htmlPage.put("actions", new WikiPageActions(wikiPage));
+    htmlPage.setMainTemplate("testPage");
+    htmlPage.put("testExecutor", new TestExecutor());
+    htmlPage.setFooterTemplate("wikiFooter.vm");
+    htmlPage.put("headerContent", WikiPageUtil.getHeaderPageHtml(wikiPage));
+    htmlPage.put("footerContent", WikiPageUtil.getFooterPageHtml(wikiPage));
+    htmlPage.setErrorNavTemplate("errorNavigator");
     
-    public WikiPage createPage(String qualifiedPageName, AddChildPageResponder2 pageResponder, Map<String, String> params) throws Exception {
-        
-        WikiPage rootPage = loadRootPageFromFileSystem();
-        WikiPage wikiPage = pageResponder.createPage(rootPage.getPageCrawler(), qualifiedPageName, params);
+    // save test results?
+    // render page / build html
 
-        return wikiPage;
+    return htmlPage.html() + stringWriter.toString();
+  }
+  
+  public class TestExecutor {
+    public void execute() {
     }
-    
+  }
 
-    public String showPage(String qualifiedPageName, WikiPageResponder pageResponder) {
-        
-        WikiPage page = loadPageFromFileSystem(qualifiedPageName);
-        PageFactory pageFactory = new PageFactory(new File("."), "./");
-        
-        String html = pageResponder.makeHtml(pageFactory, page);
+  public WikiPage createPage(String qualifiedPageName, AddChildPageResponder2 pageResponder, Map<String, String> params)
+      throws Exception {
 
-        return html;
-    }
+    WikiPage rootPage = loadRootPageFromFileSystem();
+    WikiPage wikiPage = pageResponder.createPage(rootPage.getPageCrawler(), qualifiedPageName, params);
 
-    public String showEditPage(String qualifiedPageName, EditResponder2 pageResponder) {
-        
-        WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
-        
-        PageFactory pageFactory = new PageFactory(new File("."), "./");
-     
-        String html = pageResponder.makeHtml(currentPage, pageFactory);
-        return html;
-    }
+    return wikiPage;
+  }
 
-    public String showCreatePage(String qualifiedPageName, NewPageResponder2 pageResponder, Map<String, String> params) {
-        
-        WikiPage rootPage = loadRootPageFromFileSystem();
-        
-        PageFactory pageFactory = new PageFactory(new File("."), "./");
-     
-        String html = pageResponder.makeHtml(pageFactory, qualifiedPageName, rootPage.getPageCrawler(), params);
-        return html;
-    }
+  public String showPage(String qualifiedPageName, WikiPageResponder pageResponder) {
 
+    WikiPage page = loadPageFromFileSystem(qualifiedPageName);
+    PageFactory pageFactory = new PageFactory(new File("."), "./");
 
-    public WikiPage updatePage(String qualifiedPageName, SaveResponder2 saveResponder2, Map<String, String> params) {
-        
-        WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
-        
-        saveResponder2.updatePage(currentPage, params);
-        return currentPage;
-    }
-    
-    private WikiPage loadPageFromFileSystem(String qualifiedPageName) {
-      WikiPage rootPage = loadRootPageFromFileSystem();
-    
-      WikiPagePath currentPagePath = PathParser.parse(qualifiedPageName);
-      WikiPage currentPage = rootPage.getPageCrawler().getPage(currentPagePath);
-      return currentPage;
-    }
+    String html = pageResponder.makeHtml(pageFactory, page);
 
+    return html;
+  }
 
-    private WikiPage loadRootPageFromFileSystem() {
-      FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(), new ZipFileVersionsController());
-    
-      SystemVariableSource variableSource = new SystemVariableSource();
-      WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource);
-      return rootPage;
-    }
+  public String showEditPage(String qualifiedPageName, EditResponder2 pageResponder) {
 
-    
+    WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
+
+    PageFactory pageFactory = new PageFactory(new File("."), "./");
+
+    String html = pageResponder.makeHtml(currentPage, pageFactory);
+    return html;
+  }
+
+  public String showCreatePage(String qualifiedPageName, NewPageResponder2 pageResponder, Map<String, String> params) {
+
+    WikiPage rootPage = loadRootPageFromFileSystem();
+
+    PageFactory pageFactory = new PageFactory(new File("."), "./");
+
+    String html = pageResponder.makeHtml(pageFactory, qualifiedPageName, rootPage.getPageCrawler(), params);
+    return html;
+  }
+
+  public WikiPage updatePage(String qualifiedPageName, SaveResponder2 saveResponder2, Map<String, String> params) {
+
+    WikiPage currentPage = loadPageFromFileSystem(qualifiedPageName);
+
+    saveResponder2.updatePage(currentPage, params);
+    return currentPage;
+  }
+
+  private WikiPage loadPageFromFileSystem(String qualifiedPageName) {
+    WikiPage rootPage = loadRootPageFromFileSystem();
+
+    WikiPagePath currentPagePath = PathParser.parse(qualifiedPageName);
+    WikiPage currentPage = rootPage.getPageCrawler().getPage(currentPagePath);
+    return currentPage;
+  }
+
+  private WikiPage loadRootPageFromFileSystem() {
+    FileSystemPageFactory wikiPageFactory = new FileSystemPageFactory(new DiskFileSystem(),
+        new ZipFileVersionsController());
+
+    SystemVariableSource variableSource = new SystemVariableSource();
+    WikiPage rootPage = wikiPageFactory.makePage(new File(".", "FitNesseRoot"), "FitNesseRoot", null, variableSource);
+    return rootPage;
+  }
+
 }

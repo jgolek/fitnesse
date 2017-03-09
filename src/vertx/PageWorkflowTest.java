@@ -14,7 +14,16 @@ import fitnesse.wiki.WikiPage;
 
 public class PageWorkflowTest {
     
-    
+     @Test
+    public void testRunTest() throws Exception {
+       PageWorkflow pw = new PageWorkflow();
+
+       Map<String, String> params = new HashMap<>();
+       String runTest = pw.runTest("FrontPage.TestPage1", params);
+       System.out.println(runTest);
+    }
+  
+  
     @Test
     public void testEditResponder2() throws Exception {
         
@@ -49,8 +58,8 @@ public class PageWorkflowTest {
         params.put("pageName", "TestTest");
         WikiPage page = pw.updatePage("FrontPage.TestTest", new SaveResponder2(), params);
         
-        assertEquals("FrontPage.TestTest", page.getName());
-        
-    }
+    assertEquals("FrontPage.TestTest", page.getName());
+
+  }
 
 }

@@ -57,7 +57,7 @@ import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
 
-public class SuiteResponder2 extends ChunkingResponder2  {
+public class SuiteResponder2 {
   private static final Logger LOG = Logger.getLogger(SuiteResponder2.class.getName());
 
   private static final String NOT_FILTER_ARG = "excludeSuiteFilter";
@@ -99,6 +99,8 @@ public class SuiteResponder2 extends ChunkingResponder2  {
     if (result != response){
         return result;
     }
+    
+    
     testRunId = runningTestingTracker.generateNextTicket();
     response.addHeader("X-FitNesse-Test-Id", testRunId);
     return response;
@@ -106,9 +108,11 @@ public class SuiteResponder2 extends ChunkingResponder2  {
 
   @Override
   protected void doSending() throws Exception {
+    
     debug |= request.hasInput("debug");
     remoteDebug |= request.hasInput("remote_debug");
     includeHtml |= request.hasInput("includehtml");
+    
     data = page.getData();
 
     createMainFormatter();

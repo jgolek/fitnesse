@@ -12,4 +12,29 @@ Output
 Test
 
 
+JavaCode.
+
+doSending: 
+
+"Interactive" Was bedeutet das?
+      makeHtml().render(response.getWriter());
+
+"Other"
+
+testResult
+files/testResult/FrontPage.TestPage1/*.xml
+
+
+CallTree
+mainFormatter   SuiteHtmlFormatter  (id=62) 
+testRunId   "1" (id=91) 
+
+isInteractive() == true
+testNav.vm | navTest.vm?
+doExecuteTests
+performExecution()
+
+runner.executeTestPages();
+
+
 

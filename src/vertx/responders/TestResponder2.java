@@ -44,4 +44,9 @@ public class TestResponder2 extends SuiteResponder2 {
     });
   }
 
+  public void runTest() {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
