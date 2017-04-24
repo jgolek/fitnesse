@@ -13,53 +13,53 @@ import vertx.responders.SaveResponder2;
 import fitnesse.wiki.WikiPage;
 
 public class PageWorkflowTest {
-    
-     @Test
-    public void testRunTest() throws Exception {
-       PageWorkflow pw = new PageWorkflow();
 
-       Map<String, String> params = new HashMap<>();
-       String runTest = pw.runTest("FrontPage.TestPage1", params);
-       System.out.println(runTest);
+    @Test
+    public void testRunTest() throws Exception {
+        PageWorkflow pw = new PageWorkflow();
+
+        Map<String, String> params = new HashMap<>();
+        String runTest = pw.runTest("FrontPage.TestPage1", params);
+        System.out.println(runTest);
     }
-  
-  
+
+
     @Test
     public void testEditResponder2() throws Exception {
-        
+
         PageWorkflow pw = new PageWorkflow();
-        
+
         String run = pw.showEditPage("FitNesse.UserGuide", new EditResponder2());
-        
+
         System.out.println(run);
-        
+
     }
-    
-    
+
+
     @Test
     public void testAddChildPage() throws Exception {
-        
+
         PageWorkflow pw = new PageWorkflow();
-        
+
         Map<String, String> params = new HashMap<>();
         params.put("pageName", "TestTest");
         WikiPage page = pw.createPage("FrontPage", new AddChildPageResponder2(), params);
-        
+
         assertEquals("FrontPage.TestTest", page.getName());
-        
+
     }
-    
+
     @Test
     public void testSavaData() throws Exception {
-        
+
         PageWorkflow pw = new PageWorkflow();
-        
+
         Map<String, String> params = new HashMap<>();
         params.put("pageName", "TestTest");
         WikiPage page = pw.updatePage("FrontPage.TestTest", new SaveResponder2(), params);
-        
-    assertEquals("FrontPage.TestTest", page.getName());
 
-  }
+        assertEquals("FrontPage.TestTest", page.getName());
+
+    }
 
 }

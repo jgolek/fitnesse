@@ -4,38 +4,19 @@ import java.io.File;
 import java.io.StringWriter;
 import java.util.Map;
 
-import vertx.responders.AddChildPageResponder2;
-import vertx.responders.EditResponder2;
-import vertx.responders.NewPageResponder2;
-import vertx.responders.SaveResponder2;
-import vertx.responders.TestResponder2;
-import vertx.responders.WikiPageResponder;
-import vertx.responders.SuiteResponder2.TestExecutor;
-import vertx.responders.SuiteResponder2.WikiPageFooterRenderer;
-import vertx.responders.SuiteResponder2.WikiPageHeaderRenderer;
 import fitnesse.html.template.HtmlPage;
 import fitnesse.html.template.PageFactory;
 import fitnesse.html.template.PageTitle;
 import fitnesse.reporting.SuiteHtmlFormatter;
-import fitnesse.responders.WikiImportingResponder;
 import fitnesse.responders.WikiPageActions;
 import fitnesse.testrunner.WikiPageDescriptor;
 import fitnesse.testrunner.WikiTestPage;
-import fitnesse.testsystems.Assertion;
-import fitnesse.testsystems.ExceptionResult;
-import fitnesse.testsystems.TestPage;
-import fitnesse.testsystems.TestResult;
-import fitnesse.testsystems.TestSummary;
-import fitnesse.testsystems.TestSystem;
-import fitnesse.testsystems.TestSystemListener;
 import fitnesse.testsystems.slim.CustomComparatorRegistry;
 import fitnesse.testsystems.slim.HtmlSlimTestSystem;
 import fitnesse.testsystems.slim.InProcessSlimClientBuilder;
 import fitnesse.testsystems.slim.SlimClient;
-import fitnesse.testsystems.slim.SlimClientBuilder;
 import fitnesse.testsystems.slim.SlimTestSystem;
 import fitnesse.testsystems.slim.tables.SlimTableFactory;
-import fitnesse.wiki.PageData;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.SystemVariableSource;
 import fitnesse.wiki.WikiPage;
@@ -44,6 +25,14 @@ import fitnesse.wiki.WikiPageUtil;
 import fitnesse.wiki.fs.DiskFileSystem;
 import fitnesse.wiki.fs.FileSystemPageFactory;
 import fitnesse.wiki.fs.ZipFileVersionsController;
+import vertx.reporting.history.TestXmlFormatter2;
+import vertx.responders.AddChildPageResponder2;
+import vertx.responders.EditResponder2;
+import vertx.responders.NewPageResponder2;
+import vertx.responders.SaveResponder2;
+import vertx.responders.SuiteResponder2.HistoryWriterFactory;
+import vertx.responders.TestResponder2;
+import vertx.responders.WikiPageResponder;
 
 public class PageWorkflow {
 
@@ -70,9 +59,18 @@ public class PageWorkflow {
     StringWriter stringWriter = new StringWriter();
     SuiteHtmlFormatter htmlFormatter = new SuiteHtmlFormatter(wikiPage, stringWriter);
     testSystem.addTestSystemListener(htmlFormatter);
-    testSystem.runTests(testPage);
-    System.out.println(qualifiedPageName);
+    
+    HistoryWriterFactory source = new HistoryWriterFactory();
+    
+    File testHistoryDirectory = null;
+    
     PageFactory pageFactory = new PageFactory(new File("."), "./");
+    TestXmlFormatter2 testXmlFormatter = new TestXmlFormatter2(testHistoryDirectory, pageFactory, wikiPage, source);
+    testSystem.addTestSystemListener(testXmlFormatter);
+    
+    testSystem.runTests(testPage);
+
+    System.out.println(qualifiedPageName);
     HtmlPage htmlPage = pageFactory.newPage();
     htmlPage.setTitle(testPage.getName() + ": " + testPage);
     htmlPage.setPageTitle(new PageTitle(qualifiedPageName, qualifiedPageName));

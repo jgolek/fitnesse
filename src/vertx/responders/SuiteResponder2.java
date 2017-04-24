@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 
-import util.FileUtil;
 import fitnesse.FitNesseContext;
 import fitnesse.components.TraversalListener;
 import fitnesse.html.template.HtmlPage;
@@ -56,6 +55,7 @@ import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.WikiPageUtil;
+import util.FileUtil;
 
 public class SuiteResponder2 {
   private static final Logger LOG = Logger.getLogger(SuiteResponder2.class.getName());
@@ -93,109 +93,58 @@ public class SuiteResponder2 {
     return mainFormatter instanceof InteractiveFormatter;
   }
 
-  @Override
-  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
-    Response result = super.makeResponse(context, request);
-    if (result != response){
-        return result;
-    }
-    
-    
-    testRunId = runningTestingTracker.generateNextTicket();
-    response.addHeader("X-FitNesse-Test-Id", testRunId);
-    return response;
-  }
-
-  @Override
   protected void doSending() throws Exception {
     
-    debug |= request.hasInput("debug");
-    remoteDebug |= request.hasInput("remote_debug");
-    includeHtml |= request.hasInput("includehtml");
-    
-    data = page.getData();
-
-    createMainFormatter();
-
-    if (isInteractive()) {
-      makeHtml().render(response.getWriter());
-    } else {
-      doExecuteTests();
-    }
-
-    closeHtmlResponse(exitCode);
-
-    cleanHistoryForSuite();
+//    debug |= request.hasInput("debug");
+//    remoteDebug |= request.hasInput("remote_debug");
+//    includeHtml |= request.hasInput("includehtml");
+//    
+//    data = page.getData();
+//
+//    createMainFormatter();
+//
+//    if (isInteractive()) {
+//      makeHtml().render(response.getWriter());
+//    } else {
+//      doExecuteTests();
+//    }
+//
+//    closeHtmlResponse(exitCode);
+//
+//    cleanHistoryForSuite();
   }
 
-  private void cleanHistoryForSuite() {
-    String testHistoryDays = context.getProperty("test.history.days");
-    if (withSuiteHistoryFormatter() && StringUtils.isNumeric(testHistoryDays)) {
-      new HistoryPurger(context.getTestHistoryDirectory(), Integer.parseInt(testHistoryDays))
-              .deleteTestHistoryOlderThanDays(path);
-    }
-  }
 
-  public void doExecuteTests() {
-    if (WikiImportProperty.isImported(data)) {
-      importWikiPages();
-    }
+//  public void doExecuteTests() {
+//    try {
+//      performExecution();
+//    } catch (Exception e) {
+//      LOG.log(Level.INFO, "Test system terminated with exception", e);
+//    }
+//
+//    exitCode = mainFormatter.getErrorCount();
+//  }
 
-    try {
-      performExecution();
-    } catch (Exception e) {
-      LOG.log(Level.INFO, "Test system terminated with exception", e);
-    }
-
-    exitCode = mainFormatter.getErrorCount();
-  }
-
-  public void importWikiPages() {
-    if (response.isXmlFormat() || !isAutoUpdated(data != null ? data : page.getData())) {
-      return;
-    }
-
-    try {
-      addToResponse("<span class=\"meta\">Updating imported content...</span><span class=\"meta\">");
-      new WikiImportingTraverser(wikiImporter, page).traverse(new TraversalListener<Object>() {
-        @Override
-        public void process(Object pageOrError) {
-          if (pageOrError instanceof ImportError) {
-            ImportError error = (ImportError) pageOrError;
-            addToResponse(" " + error.toString() + ".");
-          }
-        }
-      });
-      addToResponse(" Done.");
-      // Refresh data, since it might have changed.
-      data = page.getData();
-    } catch (IOException e) {
-      addToResponse(" Import failed: " + e.toString() + ".");
-    } finally {
-      addToResponse("</span>");
-    }
-  }
-
-  private HtmlPage makeHtml() {
-    PageCrawler pageCrawler = page.getPageCrawler();
-    WikiPagePath fullPath = pageCrawler.getFullPath();
-    String fullPathName = PathParser.render(fullPath);
-    HtmlPage htmlPage = context.pageFactory.newPage();
-    htmlPage.setTitle(getTitle() + ": " + fullPathName);
-    htmlPage.setPageTitle(new PageTitle(getTitle(), fullPath, data.getAttribute(PageData.PropertySUITES)));
-    htmlPage.setNavTemplate("testNav.vm");
-    htmlPage.put("actions", new WikiPageActions(page));
-    htmlPage.setMainTemplate(mainTemplate());
-    htmlPage.put("testExecutor", new TestExecutor());
-    htmlPage.setFooterTemplate("wikiFooter.vm");
-    htmlPage.put("headerContent", new WikiPageHeaderRenderer());
-    htmlPage.put("footerContent", new WikiPageFooterRenderer());
-    htmlPage.setErrorNavTemplate("errorNavigator");
-    htmlPage.put("multipleTestsRun", isMultipleTestsRun());
-    WikiImportingResponder.handleImportProperties(htmlPage, page);
-
-    return htmlPage;
-  }
+//  private HtmlPage makeHtml() {
+//    PageCrawler pageCrawler = page.getPageCrawler();
+//    WikiPagePath fullPath = pageCrawler.getFullPath();
+//    String fullPathName = PathParser.render(fullPath);
+//    HtmlPage htmlPage = context.pageFactory.newPage();
+//    htmlPage.setTitle(getTitle() + ": " + fullPathName);
+//    htmlPage.setPageTitle(new PageTitle(getTitle(), fullPath, data.getAttribute(PageData.PropertySUITES)));
+//    htmlPage.setNavTemplate("testNav.vm");
+//    htmlPage.put("actions", new WikiPageActions(page));
+//    htmlPage.setMainTemplate(mainTemplate());
+//    htmlPage.put("testExecutor", new TestExecutor());
+//    htmlPage.setFooterTemplate("wikiFooter.vm");
+//    htmlPage.put("headerContent", new WikiPageHeaderRenderer());
+//    htmlPage.put("footerContent", new WikiPageFooterRenderer());
+//    htmlPage.setErrorNavTemplate("errorNavigator");
+//    htmlPage.put("multipleTestsRun", isMultipleTestsRun());
+//    WikiImportingResponder.handleImportProperties(htmlPage, page);
+//
+//    return htmlPage;
+//  }
 
   public boolean isDebug() {
     return debug;
@@ -205,71 +154,56 @@ public class SuiteResponder2 {
     this.debug = debug;
   }
 
-  public class WikiPageHeaderRenderer {
 
-    public String render() {
-      return WikiPageUtil.getHeaderPageHtml(page);
-    }
+//  public class TestExecutor {
+//    public void execute() {
+//        doExecuteTests();
+//    }
+//  }
 
-  }
+//  private boolean isMultipleTestsRun() {
+//    return PageType.fromWikiPage(page) == PageType.SUITE;
+//  }
 
-  public class WikiPageFooterRenderer {
+//  protected void addFormatters(MultipleTestsRunner runner) {
+//    runner.addTestSystemListener(mainFormatter);
+//    if (withSuiteHistoryFormatter()) {
+//      addHistoryFormatter(runner);
+//    } else {
+//      runner.addExecutionLogListener(new ConsoleExecutionLogListener());
+//    }
+//    if (mainFormatter instanceof ExecutionLogListener) {
+//      runner.addExecutionLogListener((ExecutionLogListener) mainFormatter);
+//    }
+//    for (Formatter formatter : context.formatterFactory.createFormatters()) {
+//      runner.addTestSystemListener(formatter);
+//    }
+//    if (context.testSystemListener != null) {
+//      runner.addTestSystemListener(context.testSystemListener);
+//    }
+//  }
 
-    public String render() {
-        return WikiPageUtil.getFooterPageHtml(page);
-    }
+//  private boolean withSuiteHistoryFormatter() {
+//    return !request.hasInput("nohistory");
+//  }
 
-  }
+//  protected void addHistoryFormatter(MultipleTestsRunner runner) {
+//    SuiteHistoryFormatter historyFormatter = getSuiteHistoryFormatter();
+//    runner.addTestSystemListener(historyFormatter);
+//    runner.addExecutionLogListener(historyFormatter);
+//  }
 
-  public class TestExecutor {
-    public void execute() {
-        doExecuteTests();
-    }
-  }
-
-  private boolean isMultipleTestsRun() {
-    return PageType.fromWikiPage(page) == PageType.SUITE;
-  }
-
-  protected void addFormatters(MultipleTestsRunner runner) {
-    runner.addTestSystemListener(mainFormatter);
-    if (withSuiteHistoryFormatter()) {
-      addHistoryFormatter(runner);
-    } else {
-      runner.addExecutionLogListener(new ConsoleExecutionLogListener());
-    }
-    if (mainFormatter instanceof ExecutionLogListener) {
-      runner.addExecutionLogListener((ExecutionLogListener) mainFormatter);
-    }
-    for (Formatter formatter : context.formatterFactory.createFormatters()) {
-      runner.addTestSystemListener(formatter);
-    }
-    if (context.testSystemListener != null) {
-      runner.addTestSystemListener(context.testSystemListener);
-    }
-  }
-
-  private boolean withSuiteHistoryFormatter() {
-    return !request.hasInput("nohistory");
-  }
-
-  protected void addHistoryFormatter(MultipleTestsRunner runner) {
-    SuiteHistoryFormatter historyFormatter = getSuiteHistoryFormatter();
-    runner.addTestSystemListener(historyFormatter);
-    runner.addExecutionLogListener(historyFormatter);
-  }
-
-  private void createMainFormatter() {
-    if (response.isXmlFormat()) {
-      mainFormatter = newXmlFormatter();
-    } else if (response.isTextFormat()) {
-      mainFormatter = newTextFormatter();
-    } else if (response.isJunitFormat()) {
-      mainFormatter = newJunitFormatter();
-    } else {
-      mainFormatter = newHtmlFormatter();
-    }
-  }
+//  private void createMainFormatter() {
+//    if (response.isXmlFormat()) {
+//      mainFormatter = newXmlFormatter();
+//    } else if (response.isTextFormat()) {
+//      mainFormatter = newTextFormatter();
+//    } else if (response.isJunitFormat()) {
+//      mainFormatter = newJunitFormatter();
+//    } else {
+//      mainFormatter = newHtmlFormatter();
+//    }
+//  }
 
   protected String getTitle() {
     return "Test Results";
@@ -279,89 +213,89 @@ public class SuiteResponder2 {
     return "testPage";
   }
 
-  protected BaseFormatter newXmlFormatter() {
-    SuiteXmlReformatter xmlFormatter = new SuiteXmlReformatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
-    if (includeHtml)
-      xmlFormatter.includeHtml();
-    if (!isMultipleTestsRun())
-      xmlFormatter.includeInstructions();
-    return xmlFormatter;
-  }
+//  protected BaseFormatter newXmlFormatter() {
+//    SuiteXmlReformatter xmlFormatter = new SuiteXmlReformatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
+//    if (includeHtml)
+//      xmlFormatter.includeHtml();
+//    if (!isMultipleTestsRun())
+//      xmlFormatter.includeInstructions();
+//    return xmlFormatter;
+//  }
 
-  protected BaseFormatter newTextFormatter() {
-    return new TestTextFormatter(response);
-  }
+//  protected BaseFormatter newTextFormatter() {
+//    return new TestTextFormatter(response);
+//  }
+//
+//  protected BaseFormatter newJunitFormatter() {
+//    return new JunitReFormatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
+//  }
+//
+//  protected BaseFormatter newHtmlFormatter() {
+//    return new SuiteHtmlFormatter(page, response.getWriter());
+//  }
 
-  protected BaseFormatter newJunitFormatter() {
-    return new JunitReFormatter(context, page, response.getWriter(), getSuiteHistoryFormatter());
-  }
+//  protected void performExecution() throws TestExecutionException {
+//    MultipleTestsRunner runner = newMultipleTestsRunner(getPagesToRun());
+//    runningTestingTracker.addStartedProcess(testRunId, runner);
+//    if (isInteractive()) {
+//      ((InteractiveFormatter) mainFormatter).setTrackingId(testRunId);
+//    }
+//    try {
+//      runner.executeTestPages();
+//    } finally {
+//      runningTestingTracker.removeEndedProcess(testRunId);
+//    }
+//  }
 
-  protected BaseFormatter newHtmlFormatter() {
-    return new SuiteHtmlFormatter(page, response.getWriter());
-  }
-
-  protected void performExecution() throws TestExecutionException {
-    MultipleTestsRunner runner = newMultipleTestsRunner(getPagesToRun());
-    runningTestingTracker.addStartedProcess(testRunId, runner);
-    if (isInteractive()) {
-      ((InteractiveFormatter) mainFormatter).setTrackingId(testRunId);
-    }
-    try {
-      runner.executeTestPages();
-    } finally {
-      runningTestingTracker.removeEndedProcess(testRunId);
-    }
-  }
-
-  protected List<WikiPage> getPagesToRun() {
-    SuiteFilter filter = createSuiteFilter(request, page.getPageCrawler().getFullPath().toString());
-    SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
-    return suiteTestFinder.getAllPagesToRunForThisSuite();
-  }
-
-  protected MultipleTestsRunner newMultipleTestsRunner(List<WikiPage> pages) {
-    // Add test url inputs to context's variableSource.
-    final PagesByTestSystem pagesByTestSystem = new PagesByTestSystem(pages, root);
-
-    MultipleTestsRunner runner = new MultipleTestsRunner(pagesByTestSystem, context.testSystemFactory);
-    runner.setRunInProcess(debug);
-    runner.setEnableRemoteDebug(remoteDebug);
-    addFormatters(runner);
-
-    return runner;
-  }
-
-  public void addToResponse(String output) {
-    if (!isClosed()) {
-      try {
-        response.add(output);
-      } catch (IOException e) {
-        LOG.log(Level.WARNING, "Unable to send output", e);
-      }
-    }
-  }
-
-  synchronized boolean isClosed() {
-    return isClosed;
-  }
-
-  synchronized void setClosed() {
-    isClosed = true;
-  }
-
-  void closeHtmlResponse(int exitCode) throws IOException {
-    if (!isClosed()) {
-      setClosed();
-      response.closeChunks();
-      response.addTrailingHeader("Exit-Code", String.valueOf(exitCode));
-      response.closeTrailer();
-      response.close();
-    }
-  }
-
-  public Response getResponse() {
-    return response;
-  }
+//  protected List<WikiPage> getPagesToRun() {
+//    SuiteFilter filter = createSuiteFilter(request, page.getPageCrawler().getFullPath().toString());
+//    SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
+//    return suiteTestFinder.getAllPagesToRunForThisSuite();
+//  }
+//
+//  protected MultipleTestsRunner newMultipleTestsRunner(List<WikiPage> pages) {
+//    // Add test url inputs to context's variableSource.
+//    final PagesByTestSystem pagesByTestSystem = new PagesByTestSystem(pages, root);
+//
+//    MultipleTestsRunner runner = new MultipleTestsRunner(pagesByTestSystem, context.testSystemFactory);
+//    runner.setRunInProcess(debug);
+//    runner.setEnableRemoteDebug(remoteDebug);
+//    addFormatters(runner);
+//
+//    return runner;
+//  }
+//
+//  public void addToResponse(String output) {
+//    if (!isClosed()) {
+//      try {
+//        response.add(output);
+//      } catch (IOException e) {
+//        LOG.log(Level.WARNING, "Unable to send output", e);
+//      }
+//    }
+//  }
+//
+//  synchronized boolean isClosed() {
+//    return isClosed;
+//  }
+//
+//  synchronized void setClosed() {
+//    isClosed = true;
+//  }
+//
+//  void closeHtmlResponse(int exitCode) throws IOException {
+//    if (!isClosed()) {
+//      setClosed();
+//      response.closeChunks();
+//      response.addTrailingHeader("Exit-Code", String.valueOf(exitCode));
+//      response.closeTrailer();
+//      response.close();
+//    }
+//  }
+//
+//  public Response getResponse() {
+//    return response;
+//  }
 
 
   public static SuiteFilter createSuiteFilter(Request request, String suitePath) {
@@ -438,11 +372,11 @@ public class SuiteResponder2 {
     return String.format("%s_%d_%d_%d_%d.xml", datePart, summary.getRight(), summary.getWrong(), summary.getIgnores(), summary.getExceptions());
   }
 
-  private SuiteHistoryFormatter getSuiteHistoryFormatter() {
-    if (suiteHistoryFormatter == null) {
-      HistoryWriterFactory source = new HistoryWriterFactory();
-      suiteHistoryFormatter = new SuiteHistoryFormatter(context, page, source);
-    }
-    return suiteHistoryFormatter;
-  }
+//  private SuiteHistoryFormatter getSuiteHistoryFormatter() {
+//    if (suiteHistoryFormatter == null) {
+//      HistoryWriterFactory source = new HistoryWriterFactory();
+//      suiteHistoryFormatter = new SuiteHistoryFormatter(context, page, source);
+//    }
+//    return suiteHistoryFormatter;
+//  }
 }
