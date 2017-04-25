@@ -203,6 +203,7 @@ public class TestXmlFormatter2 extends BaseFormatter implements ExecutionLogList
     
     public static String makePageHistoryFileName(File testHistoryDirectory, WikiPage page, TestSummary counts, long time) {
         return String.format("%s/%s/%s",
+                testHistoryDirectory,        
                 page.getPageCrawler().getFullPath().toString(),
                 makeResultFileName(counts, time));
       }

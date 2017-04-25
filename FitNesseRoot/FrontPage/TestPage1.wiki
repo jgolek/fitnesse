@@ -1,0 +1,9 @@
+!define TEST_SYSTEM {slim} 
+
+<test page>
+
+asdfa hallo welt
+
+|hello      |
+|test|test1?|
+|a   |b     |

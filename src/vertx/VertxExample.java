@@ -118,7 +118,7 @@ public class VertxExample {
             response.end(html);
         });
 
-        server.requestHandler(router::accept).listen(8082);
+        server.requestHandler(router::accept).listen(8080);
     }
 
     private static Map<String, String> toQueryMap(String queryString) {

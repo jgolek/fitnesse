@@ -62,14 +62,17 @@ public class PageWorkflow {
     
     HistoryWriterFactory source = new HistoryWriterFactory();
     
-    File testHistoryDirectory = null;
+    File testHistoryDirectory = new File("./FitNesseRoot/files/testResults/");
     
     PageFactory pageFactory = new PageFactory(new File("."), "./");
     TestXmlFormatter2 testXmlFormatter = new TestXmlFormatter2(testHistoryDirectory, pageFactory, wikiPage, source);
     testSystem.addTestSystemListener(testXmlFormatter);
     
+    testSystem.start();
     testSystem.runTests(testPage);
-
+    testXmlFormatter.close();
+    testSystem.bye();
+    
     System.out.println(qualifiedPageName);
     HtmlPage htmlPage = pageFactory.newPage();
     htmlPage.setTitle(testPage.getName() + ": " + testPage);
