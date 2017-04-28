@@ -1,0 +1,6 @@
+---
+Test: no
+---
+!contents -R2 -g -p -f -h
+
+hello world

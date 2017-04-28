@@ -40,8 +40,6 @@ public class PageWorkflow {
 
     WikiPage wikiPage = loadPageFromFileSystem(qualifiedPageName);
 
-    TestResponder2 testResponder = new TestResponder2();
-
     // testResponder.runTest();
     // MultipleTestSystemFactory. run test.
     // wiki format to slim instructuions.
